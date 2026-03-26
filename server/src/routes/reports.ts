@@ -344,4 +344,82 @@ router.get('/tax', async (req: Request, res: Response) => {
   }
 });
 
+// GET /api/reports/menu-analytics?days=30 — Menu performance analytics
+router.get('/menu-analytics', async (req: Request, res: Response) => {
+  try {
+    const days = Number(req.query.days) || 30;
+
+    // 1. Overall ranking: which items sell best
+    const rankingRes = await query(`
+      SELECT 
+        oi.product_name_th,
+        oi.product_name_en,
+        SUM(oi.quantity) as total_qty,
+        SUM(oi.subtotal) as total_revenue,
+        COUNT(DISTINCT oi.order_id) as order_count,
+        ROUND(AVG(oi.unit_price)::numeric, 2) as avg_price
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      WHERE o.created_at >= NOW() - INTERVAL '1 day' * $1
+        AND o.status != 'cancelled'
+      GROUP BY oi.product_name_th, oi.product_name_en
+      ORDER BY total_qty DESC
+    `, [days]);
+
+    // 2. Daily trend per product (top 5 products)
+    const top5Names = rankingRes.rows.slice(0, 5).map((r: any) => r.product_name_th);
+    let dailyTrend: any[] = [];
+    if (top5Names.length > 0) {
+      const trendRes = await query(`
+        SELECT 
+          DATE(o.created_at) as date,
+          oi.product_name_th,
+          SUM(oi.quantity) as qty
+        FROM order_items oi
+        JOIN orders o ON oi.order_id = o.id
+        WHERE o.created_at >= NOW() - INTERVAL '1 day' * $1
+          AND o.status != 'cancelled'
+          AND oi.product_name_th = ANY($2)
+        GROUP BY DATE(o.created_at), oi.product_name_th
+        ORDER BY date ASC
+      `, [days, top5Names]);
+      dailyTrend = trendRes.rows;
+    }
+
+    // 3. Category breakdown
+    const categoryRes = await query(`
+      SELECT 
+        c.name_th as category_name,
+        SUM(oi.quantity) as total_qty,
+        SUM(oi.subtotal) as total_revenue,
+        COUNT(DISTINCT oi.product_name_th) as product_count
+      FROM order_items oi
+      JOIN orders o ON oi.order_id = o.id
+      JOIN products p ON oi.product_id = p.id
+      JOIN categories c ON p.category_id = c.id
+      WHERE o.created_at >= NOW() - INTERVAL '1 day' * $1
+        AND o.status != 'cancelled'
+      GROUP BY c.name_th
+      ORDER BY total_revenue DESC
+    `, [days]);
+
+    // 4. Summary stats
+    const totalQty = rankingRes.rows.reduce((s: number, r: any) => s + Number(r.total_qty), 0);
+    const totalRevenue = rankingRes.rows.reduce((s: number, r: any) => s + Number(r.total_revenue), 0);
+
+    res.json({
+      days,
+      totalProducts: rankingRes.rows.length,
+      totalItemsSold: totalQty,
+      totalMenuRevenue: totalRevenue,
+      ranking: rankingRes.rows,
+      dailyTrend,
+      categoryBreakdown: categoryRes.rows,
+    });
+  } catch (err) {
+    console.error('menu-analytics error:', err);
+    res.status(500).json({ error: 'Failed to fetch menu analytics' });
+  }
+});
+
 export default router;

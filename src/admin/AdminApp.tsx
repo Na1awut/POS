@@ -10,6 +10,7 @@ import DailyReport from './pages/reports/DailyReport';
 import MonthlyReport from './pages/reports/MonthlyReport';
 import YearlyReport from './pages/reports/YearlyReport';
 import TaxPage from './pages/TaxPage';
+import MenuAnalytics from './pages/reports/MenuAnalytics';
 
 export default function AdminApp() {
   return (
@@ -23,6 +24,7 @@ export default function AdminApp() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
+          <Route path="menu-analytics" element={<MenuAnalytics />} />
           <Route path="reports/daily" element={<DailyReport />} />
           <Route path="reports/monthly" element={<MonthlyReport />} />
           <Route path="reports/yearly" element={<YearlyReport />} />

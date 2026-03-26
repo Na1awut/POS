@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { path: '/admin/categories', label: 'หมวดหมู่', icon: '📁' },
   { path: '/admin/orders', label: 'ออเดอร์', icon: '🧾' },
   { path: '/admin/expenses', label: 'ค่าใช้จ่าย', icon: '💸' },
+  { path: '/admin/menu-analytics', label: 'วิเคราะห์เมนู', icon: '📈' },
   { path: '/admin/reports/daily', label: 'รายงานรายวัน', icon: '📅' },
   { path: '/admin/reports/monthly', label: 'รายงานรายเดือน', icon: '📆' },
   { path: '/admin/reports/yearly', label: 'รายงานรายปี', icon: '🗓️' },

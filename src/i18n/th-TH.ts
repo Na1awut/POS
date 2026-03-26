@@ -1,0 +1,31 @@
+export default {
+  menu: "เมนู",
+  share: "แชร์",
+  order: "รายการที่สั่ง",
+  add: "เพิ่ม",
+  remove: "ลบ",
+  total: "ยอดรวม",
+  tip: "ทิป",
+  selectTip: "เลือกเปอร์เซ็นต์ทิป",
+  pay: "ชำระเงิน",
+  emptyOrder: "ยังไม่มีรายการสั่งซื้อ",
+  thankYou: "ขอบคุณที่ใช้บริการ!",
+  home: "หน้าแรก",
+  catalogSubtitle: "แคตตาล็อกร้านอาหารออนไลน์",
+  orderSaved: "บันทึกออเดอร์เรียบร้อย!",
+  orderIs: "หมายเลขออเดอร์ของคุณคือ:",
+  backHome: "กลับหน้าแรก",
+  ticket: {
+    title: "ใบเสร็จรับเงิน",
+    header: "POS +",
+    salesTicket: "ใบเสร็จขาย",
+    subtotal: "ยอดรวม:",
+    discount: "ส่วนลด",
+    tip: "ทิป",
+    total: "ยอดสุทธิ:",
+    thankYou: "ขอบคุณที่มาอุดหนุน!",
+    ticketNumber: "ใบเสร็จ #",
+    remove: "[ลบ]",
+    quantity: "x"
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Navigate, Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../api/adminClient';
+import AIChatbot from './AIChatbot';
 
 const NAV_ITEMS = [
   { path: '/admin/dashboard', label: 'ภาพรวม', icon: '📊' },
@@ -92,6 +93,7 @@ export function AdminLayout() {
           <Outlet />
         </div>
       </main>
+      <AIChatbot />
     </div>
   );
 }

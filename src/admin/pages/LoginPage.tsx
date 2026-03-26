@@ -34,7 +34,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">☕</div>
-          <h1 className="text-3xl font-bold text-white">POS+ Admin</h1>
+          <h1 className="text-3xl font-bold text-white">Coffee View Admin</h1>
           <p className="text-gray-400 mt-2">ระบบจัดการร้านคาเฟ่</p>
         </div>
 

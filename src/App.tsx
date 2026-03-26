@@ -209,8 +209,8 @@ function App() {
         <nav className={`w-full mb-8 flex flex-wrap items-center justify-between text-base sm:text-lg font-medium bg-white/80 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg border ${currentTemplate.colors.border} relative z-40`}>
           <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <Link to="/" className={`flex items-center gap-2 transition-colors text-gray-800 hover:${currentTemplate.colors.text}`}>
-              <img src="/images/logo.svg" alt="POS plus Logo" className="h-12 w-auto drop-shadow-md transition-all duration-300" style={{ filter: getLogoFilter() }} />
-              <span className={`text-xl font-black tracking-tight bg-gradient-to-r ${currentTemplate.colors.primary} bg-clip-text text-transparent`}>POS +</span>
+              <img src="/images/logo.svg" alt="Coffee View Logo" className="h-12 w-auto drop-shadow-md transition-all duration-300" style={{ filter: getLogoFilter() }} />
+              <span className={`text-xl font-black tracking-tight bg-gradient-to-r ${currentTemplate.colors.primary} bg-clip-text text-transparent`}>Coffee View</span>
             </Link>
             <div className="flex items-center gap-2 sm:gap-4 ml-4">
               <Link to="/" className={`flex items-center gap-1 transition-colors text-gray-600 hover:${currentTemplate.colors.text}`}>
@@ -367,7 +367,7 @@ function App() {
         {/* Footer */}
         <footer className="w-full mt-8 flex flex-col items-center">
           <div className={`flex items-center gap-3 text-lg text-gray-600 font-medium bg-white/60 backdrop-blur-sm rounded-xl px-6 py-3 border ${currentTemplate.colors.border}`}>
-            <span className={`text-xl font-black tracking-tight bg-gradient-to-r ${currentTemplate.colors.primary} bg-clip-text text-transparent`}>POS +</span>
+            <span className={`text-xl font-black tracking-tight bg-gradient-to-r ${currentTemplate.colors.primary} bg-clip-text text-transparent`}>Coffee View</span>
             <span className="hidden sm:inline">|</span>
             <span className="text-lg text-gray-600">
               © {new Date().getFullYear()}

@@ -37,7 +37,7 @@ export default {
   backHome: "Back to home",
   ticket: {
     title: "RECEIPT",
-    header: "POS +",
+    header: "Coffee View",
     salesTicket: "SALES RECEIPT",
     subtotal: "SUBTOTAL:",
     discount: "DISCOUNT",

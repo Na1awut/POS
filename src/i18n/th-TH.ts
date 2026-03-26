@@ -17,7 +17,7 @@ export default {
   backHome: "กลับหน้าแรก",
   ticket: {
     title: "ใบเสร็จรับเงิน",
-    header: "POS +",
+    header: "Coffee View",
     salesTicket: "ใบเสร็จขาย",
     subtotal: "ยอดรวม:",
     discount: "ส่วนลด",

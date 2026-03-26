@@ -43,7 +43,7 @@ app.use('/img', express.static(path.join(process.cwd(), 'img')));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'POS+ API', version: '2.0.0' });
+  res.json({ status: 'ok', message: 'Coffee View API', version: '2.0.0' });
 });
 
 // Routes

@@ -35,8 +35,8 @@ export function AdminLayout() {
       <aside className={`${collapsed ? 'w-16' : 'w-64'} bg-gray-900 text-white flex flex-col transition-all duration-300 flex-shrink-0`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           {!collapsed && (
-            <div>
-              <div className="text-lg font-bold text-white">POS+ Admin</div>
+            <div className="flex shrink-0 items-center">
+              <div className="text-lg font-bold text-white">Coffee View Admin</div>
               <div className="text-xs text-gray-400">ระบบจัดการร้านคาเฟ่</div>
             </div>
           )}

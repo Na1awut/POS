@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "npm run migrate && node dist/index.js",
     "seed": "tsx src/seed/seed.ts",
-    "migrate": "tsx src/config/migrate.ts"
+    "migrate": "tsx src/config/migrate.ts",
+    "reset-orders": "tsx src/scripts/resetOrders.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

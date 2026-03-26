@@ -11,20 +11,20 @@ router.post('/', async (req, res) => {
   try {
     await query('BEGIN'); // Start transaction
 
-    // Generate random 4 digit order number like in the frontend mock
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000).toString().substring(1);
-    const orderNumber = `ORD-${Date.now().toString().slice(-4)}-${randomSuffix}`;
-
+    // Use database auto-increment ID as queue number
     const orderInsert = `
       INSERT INTO orders (order_number, subtotal, discount_percent, discount_amount, tip_percent, tip_amount, total)
-      VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, order_number
+      VALUES ('PENDING', $1, $2, $3, $4, $5, $6) RETURNING id
     `;
     
     const orderRes = await query(orderInsert, [
-      orderNumber, subtotal, discount_percent || 0, discount_amount || 0, tip_percent || 0, tip_amount || 0, total
+      subtotal, discount_percent || 0, discount_amount || 0, tip_percent || 0, tip_amount || 0, total
     ]);
     const orderId = orderRes.rows[0].id;
-    const finalOrderNumber = orderRes.rows[0].order_number;
+    
+    // Generate queue number from ID (e.g. #0001, #0002, ...)
+    const queueNumber = `#${orderId.toString().padStart(4, '0')}`;
+    await query('UPDATE orders SET order_number = $1 WHERE id = $2', [queueNumber, orderId]);
 
     // Insert items
     const itemInsert = `
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
     }
 
     await query('COMMIT'); // Commit transaction
-    res.status(201).json({ success: true, orderNumber: finalOrderNumber, orderId });
+    res.status(201).json({ success: true, orderNumber: queueNumber, orderId });
   } catch (error) {
     await query('ROLLBACK');
     console.error('Error creating order:', error);

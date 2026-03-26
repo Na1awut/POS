@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://pos-production-17a6.up.railway.app/api';
 
 export const fetchClient = async (endpoint: string, options: RequestInit = {}) => {
   const token = localStorage.getItem('posplus_token');

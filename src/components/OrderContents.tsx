@@ -168,23 +168,30 @@ const OrderContents = ({ order, dispatch, t, tip = 0, discount = 0, template }: 
           type="button"
           className={`w-full bg-gradient-to-r ${template?.colors?.primary || 'from-lime-600 to-yellow-500'} text-white font-semibold py-3 rounded-lg shadow-lg hover:${template?.colors?.primaryHover || 'from-lime-700 to-yellow-600'} transition-all duration-300 focus:outline-none focus:ring-4 ${template?.colors?.ring || 'focus:ring-lime-300'} focus:ring-offset-2 transform hover:scale-105`}
           onClick={async () => {
-            const orderNumber = Math.floor(100 + Math.random() * 900)
+            let orderNumber = '----'
+            
+            try {
+              // Save order to database and get real queue number
+              const { createOrder } = await import('../api/orders')
+              const result = await createOrder({ order, tip, discount } as any)
+              orderNumber = result.orderNumber || '----'
+            } catch (err) {
+              console.error('Failed to save order:', err)
+              // Fallback: use timestamp-based number
+              orderNumber = `#${Date.now().toString().slice(-4)}`
+            }
             
             try {
               const printer = SunmiPrinter as any;
-              // 1. เช็คเครื่องพิมพ์ Sunmi (ป้องกัน Error บนคอมพิวเตอร์/Browser ธรรมดา)
               const { hasPrinter } = await printer.hasPrinter();
               if (hasPrinter) {
-                // 2. ขอเชื่อมต่อบริการ Printer ของ Sunmi OS
                 await printer.printerInit();
                 
-                // 3. เริ่มส่งคำสั่งพิมพ์ใบเสร็จ
-                await printer.printText({ text: "ร้าน Anti Gravity\n", align: 'CENTER', bold: true });
+                await printer.printText({ text: "Coffee View\n", align: 'CENTER', bold: true });
                 await printer.printText({ text: "--------------------------------\n" });
-                await printer.printText({ text: `ออเดอร์: #${orderNumber}\n` });
+                await printer.printText({ text: `ออเดอร์: ${orderNumber}\n` });
                 await printer.printText({ text: "--------------------------------\n" });
                 
-                // ปรินต์รายการสินค้าแบบละเอียด
                 for (const item of order) {
                   await printer.printText({ text: `${item.name}\n` });
                   await printer.printText({ text: `${item.quantity} x ${formatCurrency(item.price)}     => ${formatCurrency(item.quantity * item.price)}\n` });
@@ -193,21 +200,17 @@ const OrderContents = ({ order, dispatch, t, tip = 0, discount = 0, template }: 
                 await printer.printText({ text: "--------------------------------\n" });
                 await printer.printText({ text: `ยอดรวม: ${formatCurrency(total)}\n` });
                 await printer.printText({ text: "--------------------------------\n" });
-                await printer.printText({ text: "ขอบคุณที่ใช้บริการ\n\n\n\n" }); // เผื่อระยะกระดาษสำหรับใบมีดตัด
+                await printer.printText({ text: "ขอบคุณที่ใช้บริการ\n\n\n\n" });
 
-                // 4. สั่งดีดลิ้นชัก + ตัดกระดาษ
                 try { await printer.openDrawer(); } catch (e) { console.warn("ไม่มีลิ้นชัก"); }
                 try { await printer.cutPaper(); } catch (e) { console.warn("ไม่มีใบมีดอัตโนมัติ"); }
-
-                
               } else {
-                console.warn("ไม่พบการเชื่อมต่อ Sunmi Printer (การรันบน Browser จะถูกข้ามขั้นตอนนี้)");
+                console.warn("ไม่พบการเชื่อมต่อ Sunmi Printer");
               }
             } catch (error) {
               console.error("Printer Error (Ignored for Web Fallback):", error);
             }
 
-            // 5. รีเซ็ตออเดอร์และบันทึกข้อมูล
             dispatch({ type: 'reset-order' })
             navigate('/confirmacion', { state: { orderNumber } })
           }}
@@ -294,7 +297,7 @@ const OrderContents = ({ order, dispatch, t, tip = 0, discount = 0, template }: 
         {/* Pie del ticket */}
         <div className="text-center text-sm text-gray-500 border-t border-dotted border-gray-400 pt-4">
           <div>{t.ticket.thankYou}</div>
-          <div className="mt-1">{t.ticket.ticketNumber}{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</div>
+          <div className="mt-1">{t.ticket.ticketNumber}----</div>
         </div>
       </div>
     </div>

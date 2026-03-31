@@ -4,6 +4,8 @@ import type { OrderActions } from '../reducers/order-reducer'
 import { formatCurrency } from '../helpers'
 import { useNavigate } from 'react-router-dom'
 import { SunmiPrinter } from '@kduma-autoid/capacitor-sunmi-printer'
+import { printReceipt } from '../utils/receiptPrinter'
+import { fetchClient } from '../api/client'
 
 interface OrderContentsProps {
   order: OrderItem[]
@@ -224,34 +226,53 @@ const OrderContents = ({ order, dispatch, t, tip = 0, discount = 0, template }: 
               orderNumber = `#${Date.now().toString().slice(-4)}`
             }
             
+            // Print receipt using active template
             try {
-              const printer = SunmiPrinter as any;
-              const { hasPrinter } = await printer.hasPrinter();
-              if (hasPrinter) {
-                await printer.printerInit();
-                
-                await printer.printText({ text: "Coffee View\n", align: 'CENTER', bold: true });
-                await printer.printText({ text: "--------------------------------\n" });
-                await printer.printText({ text: `ออเดอร์: ${orderNumber}\n` });
-                await printer.printText({ text: "--------------------------------\n" });
-                
-                for (const item of order) {
-                  await printer.printText({ text: `${item.name}\n` });
-                  await printer.printText({ text: `${item.quantity} x ${formatCurrency(item.price)}     => ${formatCurrency(item.quantity * item.price)}\n` });
-                }
-                
-                await printer.printText({ text: "--------------------------------\n" });
-                await printer.printText({ text: `ยอดรวม: ${formatCurrency(total)}\n` });
-                await printer.printText({ text: "--------------------------------\n" });
-                await printer.printText({ text: "ขอบคุณที่ใช้บริการ\n\n\n\n" });
+              const activeTemplate = await fetchClient('/receipt/templates/active');
+              const templateData = typeof activeTemplate.template_data === 'string'
+                ? JSON.parse(activeTemplate.template_data)
+                : activeTemplate.template_data;
 
-                try { await printer.openDrawer(); } catch (e) { console.warn("ไม่มีลิ้นชัก"); }
-                try { await printer.cutPaper(); } catch (e) { console.warn("ไม่มีใบมีดอัตโนมัติ"); }
-              } else {
-                console.warn("ไม่พบการเชื่อมต่อ Sunmi Printer");
+              await printReceipt(
+                templateData,
+                {
+                  orderNumber,
+                  items: order.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+                  subtotal: subTotal,
+                  discount,
+                  discountAmount,
+                  tipPercent: tip,
+                  tipAmount,
+                  total,
+                },
+                activeTemplate.paper_width || '58'
+              );
+            } catch (printErr) {
+              // Fallback: basic hardcoded print if no template
+              console.warn('Template print failed, using fallback:', printErr);
+              try {
+                const printer = SunmiPrinter as any;
+                const { hasPrinter } = await printer.hasPrinter();
+                if (hasPrinter) {
+                  await printer.printerInit();
+                  await printer.printText({ text: "Coffee View\n", align: 'CENTER', bold: true });
+                  await printer.printText({ text: "--------------------------------\n" });
+                  await printer.printText({ text: `ออเดอร์: ${orderNumber}\n` });
+                  await printer.printText({ text: "--------------------------------\n" });
+                  for (const item of order) {
+                    await printer.printText({ text: `${item.name}\n` });
+                    await printer.printText({ text: `${item.quantity} x ${formatCurrency(item.price)}     => ${formatCurrency(item.quantity * item.price)}\n` });
+                  }
+                  await printer.printText({ text: "--------------------------------\n" });
+                  await printer.printText({ text: `ยอดรวม: ${formatCurrency(total)}\n` });
+                  await printer.printText({ text: "--------------------------------\n" });
+                  await printer.printText({ text: "ขอบคุณที่ใช้บริการ\n\n\n\n" });
+                  try { await printer.openDrawer(); } catch (_e) { /* no drawer */ }
+                  try { await printer.cutPaper(); } catch (_e) { /* no cutter */ }
+                }
+              } catch (fallbackErr) {
+                console.error("Printer Error:", fallbackErr);
               }
-            } catch (error) {
-              console.error("Printer Error (Ignored for Web Fallback):", error);
             }
 
             dispatch({ type: 'reset-order' })

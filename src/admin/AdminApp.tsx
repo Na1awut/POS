@@ -10,6 +10,7 @@ import DailyReport from './pages/reports/DailyReport';
 import MonthlyReport from './pages/reports/MonthlyReport';
 import YearlyReport from './pages/reports/YearlyReport';
 import TaxPage from './pages/TaxPage';
+import ReceiptDesignerPage from './pages/ReceiptDesignerPage';
 import MenuAnalytics from './pages/reports/MenuAnalytics';
 
 export default function AdminApp() {
@@ -24,6 +25,7 @@ export default function AdminApp() {
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="expenses" element={<ExpensesPage />} />
+          <Route path="receipt-designer" element={<ReceiptDesignerPage />} />
           <Route path="menu-analytics" element={<MenuAnalytics />} />
           <Route path="reports/daily" element={<DailyReport />} />
           <Route path="reports/monthly" element={<MonthlyReport />} />

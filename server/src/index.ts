@@ -12,6 +12,7 @@ import expensesRoutes from './routes/expenses';
 import categoriesRoutes from './routes/categories';
 import aiRoutes from './routes/ai';
 import uploadRoutes from './routes/upload';
+import receiptRoutes from './routes/receipt';
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use('/api/expenses', expensesRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/receipt', receiptRoutes);
 
 app.listen(port, () => {
   console.log(`[POS+ Server]: Running at http://localhost:${port}`);

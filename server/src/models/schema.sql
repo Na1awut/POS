@@ -169,6 +169,19 @@ CREATE TABLE IF NOT EXISTS members (
 );
 
 -- ============================================================
+-- RECEIPT TEMPLATES (ออกแบบใบเสร็จ)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS receipt_templates (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL DEFAULT 'Default Receipt',
+  is_active BOOLEAN DEFAULT false,
+  paper_width VARCHAR(10) DEFAULT '58',  -- '58' | '80' mm
+  template_data JSONB NOT NULL DEFAULT '{"blocks":[]}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
 -- INDEXES
 -- ============================================================
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);

@@ -23,6 +23,7 @@ const allowedOrigins = [
   'http://localhost:4173',
   'capacitor://localhost',
   'http://localhost',
+  'https://localhost',
   ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
 ];
 app.use(cors({

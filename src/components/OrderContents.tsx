@@ -1,5 +1,5 @@
 import type { OrderItem } from '../types'
-import type { Dispatch } from 'react'
+import { useEffect, type Dispatch } from 'react'
 import type { OrderActions } from '../reducers/order-reducer'
 import { formatCurrency } from '../helpers'
 import { useNavigate } from 'react-router-dom'
@@ -21,6 +21,49 @@ const OrderContents = ({ order, dispatch, t, tip = 0, discount = 0, template }: 
   const tipAmount = discountedSubTotal * (tip / 100)
   const total = discountedSubTotal + tipAmount
   const navigate = useNavigate()
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    const updateCustomerDisplay = async () => {
+      try {
+        const printer = SunmiPrinter as any;
+        
+        // Try to wake up LCD first
+        try { await printer.sendLCDWakeUpCommand(); } catch(e) {}
+        
+        if (order.length === 0) {
+          try {
+            await printer.sendLCDDoubleString({
+              top: "   Welcome to   ",
+              bottom: "   Coffee View  "
+            });
+          } catch(e) {}
+        } else {
+          try {
+            const lastItem = order[order.length - 1];
+            let topText = lastItem ? `${lastItem.quantity}x ${lastItem.name}` : "Order Update";
+            // Limit text size for typically 16-character LCD
+            if (topText.length > 16) topText = topText.substring(0, 16);
+            
+            await printer.sendLCDDoubleString({
+              top: topText,
+              bottom: `Total: ${formatCurrency(total)}`
+            });
+          } catch(e) {}
+        }
+      } catch (err) {
+        // Safe to ignore if the device doesn't have an LCD
+        console.debug("LCD not supported on this device.");
+      }
+    };
+
+    if (isMounted) {
+      updateCustomerDisplay();
+    }
+
+    return () => { isMounted = false; };
+  }, [total, order]);
 
   const tipOptions = [
     { id: 'tip-0', value: 0, label: '0%' },
